@@ -1,6 +1,6 @@
 from scraper import Scraper
 from logger import logger
-from constants import RED, RESET
+
 def main():
     """
     Función principal que crea una instancia de Scraper y ejecuta el flujo principal de scraping.
