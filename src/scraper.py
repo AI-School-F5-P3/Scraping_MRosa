@@ -2,7 +2,8 @@ from bs4 import BeautifulSoup
 import requests
 import re
 from quote import Quote
-from constants import URL_BASE, HEADERS, separator, BOOK, WRITING_HAND
+from logger import logger
+from constants import URL_BASE, HEADERS, SEPARATOR, BOOK, WRITING_HAND, RED, RESET
 
 class Scraper:
     """
@@ -35,9 +36,9 @@ class Scraper:
             response.raise_for_status()
             self.soup = BeautifulSoup(response.text, "html.parser")
         except requests.exceptions.RequestException as e:
-            print(f"Error al obtener la página: {e}")
+            logger.error(f"Error al obtener la página: {e}")
         except Exception as e:
-            print(f"Ocurrió un error inesperado: {e}")
+            logger.error(f"Ocurrió un error inesperado: {e}")
 
     def get_header(self):
         """
@@ -50,11 +51,14 @@ class Scraper:
             primer_h1 = self.soup.find('h1')
             primer_h1_text = primer_h1.text if primer_h1 else 'No H1 found'
             primer_h1_limpio = re.sub(r'[^a-zA-Z\s]', '', primer_h1_text)  # Limpiar el texto
-            print(separator)
+            print(SEPARATOR)
             print(f"                              {BOOK}  {primer_h1_limpio.strip().upper()}  {WRITING_HAND}")  # Imprimir en mayúsculas
-            print(separator)
+            print(SEPARATOR)
         except AttributeError as e:
-            print(f"Error al obtener el encabezado: {e}")
+            logger.error(f"Error al obtener el encabezado: {e}")
+        except Exception as e:
+            logger.error(f"Ocurrió un error inesperado: {e}")
+
 
     def get_quotes(self):
         """
@@ -74,7 +78,9 @@ class Scraper:
                 tag_list = [tag.text.strip().capitalize() for tag in tags]
                 quotes_list.append(Quote(text, author, tag_list))
         except AttributeError as e:
-            print(f"Error al procesar las citas: {e}")
+            logger.error(f"Error al procesar las citas: {e}")
+        except Exception as e:
+            logger.error(f"Ocurrió un error inesperado: {e}")
         return quotes_list
 
     def display_quotes(self, quotes_list):

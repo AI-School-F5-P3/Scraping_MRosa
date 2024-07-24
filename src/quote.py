@@ -1,5 +1,6 @@
 import re
-from constants import separator, PASTEL_YELLOW, PASTEL_PINK, WHITE, RESET
+from logger import logger
+from constants import SEPARATOR, PASTEL_YELLOW, PASTEL_PINK, WHITE, RED, RESET
 
 class Quote:
     '''
@@ -27,9 +28,13 @@ class Quote:
             author (str): El autor de la cita.
             tags (list of str): Etiquetas asociadas con la cita.
         '''
-        self.text = text
-        self.author = self.clean_author(author)
-        self.tags = tags
+        try:
+            self.text = str(text)
+            self.author = self.clean_author(author)
+            self.tags = list(tags)
+        except Exception as e:
+            logger.error(f"Error al inicializar Quote: {e}")
+            raise # Indicamos que este es un error que no podemos manejar completamente en este nivel y que debe ser manejado por el código que está intentando crear la instancia de Quote
 
     '''
     El decorador @staticmethod en Python se utiliza para definir un método estático dentro de una clase. 
@@ -49,13 +54,20 @@ class Quote:
         Returns:
             str: El nombre del autor limpio y capitalizado.
         '''
-        return re.sub(r'[^a-zA-Z\s]', '', author).lower().title()
+        try:
+            return re.sub(r'[^a-zA-Z\s]', '', author).lower().title()
+        except Exception as e:
+            logger.error(f"Error al limpiar el nombre del autor: {e}")
+            return (f"{RED}Error{RESET}")
 
     def display(self):
         '''
         Muestra la cita, el autor y las etiquetas en un formato estilizado.
         '''
-        print(f"{PASTEL_YELLOW}{self.text}{RESET}")
-        print(f"{WHITE}- {self.author}{RESET}")
-        print(f"\n{PASTEL_PINK}{' | '.join(self.tags)}{RESET}")
-        print(separator)
+        try:
+            print(f"{PASTEL_YELLOW}{self.text}{RESET}")
+            print(f"{WHITE}- {self.author}{RESET}")
+            print(f"\n{PASTEL_PINK}{' | '.join(self.tags)}{RESET}")
+            print(SEPARATOR)
+        except Exception as e:
+            logger.error(f"Error al mostrar la cita: {e}")
