@@ -1,40 +1,30 @@
 from bs4 import BeautifulSoup
 import requests
 import re
-
-# Definición de colores, estilos e iconos
-# Colores pastel personalizados
+import constants
 
 
-ITALIC = "\033[3m"
-RESET = "\033[0m"
-WHITE = "\033[37m"  # Blanco
-PASTEL_YELLOW = "\033[38;5;229m"  # Amarillo pastel
-PASTEL_PINK = "\033[38;5;218m"    # Rosa pastel más claro
-BOOK = "\U0001F4D6"          # 📖
-WRITING_HAND = "\U0000270D"  # ✍️
-
-
-# Empezamos el scraping
-
-# 1. Obtener el HTML
+# User-Agent para protegernos de baneos
+headers = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+}
 URL_BASE = 'https://quotes.toscrape.com/'
-pedido_obtenido = requests.get(URL_BASE)
+response = requests.get(URL_BASE, headers=headers) # Obtener el HTML
 
 # Verificar si la petición fue exitosa
-if pedido_obtenido.status_code == 200:
-    html_obtenido = pedido_obtenido.text
+if response.status_code == 200:
+    html = response.text
 
-    # 2. "Parsear" ese HTML
-    soup = BeautifulSoup(html_obtenido, "html.parser")
+    # "Parsear" ese HTML
+    soup = BeautifulSoup(html, "html.parser")
 
     primer_h1 = soup.find('h1')
-    print("\n·················································································\n")
+    print(constants.separator)
     # Solo el texto limpio y en mayusculas
     primer_h1 = soup.find('h1').text  # Obtener el texto del primer h1
     primer_h1_limpio = re.sub(r'[^a-zA-Z\s]', '', primer_h1)  # Limpiar el texto
-    print(f"                              {BOOK}  {primer_h1_limpio.strip().upper()}  {WRITING_HAND}")  # Imprimir en mayúsculas
-    print("\n·················································································\n")
+    print(f"                              {constants.BOOK}  {primer_h1_limpio.strip().upper()}  {constants.WRITING_HAND}")  # Imprimir en mayúsculas
+    print(constants.separator)
 
 
 
@@ -56,9 +46,9 @@ if pedido_obtenido.status_code == 200:
         tag_list = [tag.text.strip().capitalize() for tag in tags]
         
         # Imprimir los resultados
-        print(f"{PASTEL_YELLOW}{text}{RESET}")
-        print(f"{WHITE}- {cleaned_author}{RESET}")
-        print(f"\n{PASTEL_PINK}{' | '.join(tag_list)}{RESET}")
-        print("\n·················································································\n")
+        print(f"{constants.PASTEL_YELLOW}{text}{constants.RESET}")
+        print(f"{constants.WHITE}- {cleaned_author}{constants.RESET}")
+        print(f"\n{constants.PASTEL_PINK}{' | '.join(tag_list)}{constants.RESET}")
+        print(constants.separator)
 else:
-    print(f"Error al obtener la página. Código de estado: {pedido_obtenido.status_code}")
+    print(f"Error al obtener la página. Código de estado: {response.status_code}")
