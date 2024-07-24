@@ -35,8 +35,8 @@ class Loader:
         """
         Método privado que anima el loader en la consola.
         """
-        chars = "/—\\|"  # Caracteres para la animación
+        chars = "🕐🕑🕒🕓🕔🕕🕖🕗🕘🕙🕚🕛"  # Caracteres para la animación
         while self.loading:
             for char in chars:
-                print(f"\r{LIGHT_CYAN}Scrapeando... {char}  ", end="", flush=True)
+                print(f"\r{LIGHT_CYAN}Scrapeando... {char}  {RESET}", end="", flush=True)
                 time.sleep(0.1)  # Pausa breve entre cada frame de la animación

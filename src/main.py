@@ -17,10 +17,7 @@ def main():
         
         # Obtener el HTML de la página web y almacenarlo en el atributo 'soup'
         scpr.fetch_html()
-        
-        # Extraer y mostrar el primer encabezado H1 de la página web
-        scpr.get_header()
-        
+                
         # Extraer una lista de citas desde la página web
         quotes = scpr.get_quotes()
         

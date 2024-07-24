@@ -93,7 +93,7 @@ class Quote:
         try:
             print(f"{PASTEL_YELLOW}{self.text}{RESET}\n")
             print(f"{WHITE}{self.author} ({self.born_date} {self.born_location}) {RESET}\n")
-            print(f"{WHITE}{self.description}{RESET}")
+            # print(f"{WHITE}{self.description}{RESET}")
             print(f"\n{PASTEL_PINK}{' | '.join(self.tags)}{RESET}")
             print(SEPARATOR)
         except Exception as e:

@@ -15,7 +15,7 @@ WRITING_HAND = "\U0000270D"  # ✍️
 # Resto de constantes
 
 URL_BASE = 'https://quotes.toscrape.com/'
-
+URL_PAGE = 'page/'
 # User-Agent para protegernos de baneos
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, como Gecko) Chrome/120.0.0.0 Safari/537.36"
