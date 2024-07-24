@@ -57,7 +57,7 @@ def setup_logging():
         
         # Crear el handler de consola
         console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.DEBUG)
+        console_handler.setLevel(logging.WARNING)
 
         # Configurar el formatter con colores para la consola
         console_formatter = ColoredFormatter(f'[%(levelname)s] {PASTEL_YELLOW}[%(filename)s:%(lineno)d] - %(message)s')

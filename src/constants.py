@@ -4,6 +4,7 @@ RESET = "\033[0m"
 WHITE = "\033[37m"
 RED = "\033[31m"
 YELLOW = "\033[33m"
+LIGHT_CYAN = "\033[96m"
 GREEN = "\033[32m"
 PASTEL_YELLOW = "\033[38;5;229m"
 PASTEL_PINK = "\033[38;5;218m"
@@ -14,7 +15,7 @@ WRITING_HAND = "\U0000270D"  # ✍️
 # Resto de constantes
 
 URL_BASE = 'https://quotes.toscrape.com/'
-
+URL_PAGE = 'page/'
 # User-Agent para protegernos de baneos
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, como Gecko) Chrome/120.0.0.0 Safari/537.36"
