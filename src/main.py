@@ -1,59 +1,36 @@
-from bs4 import BeautifulSoup
-import requests
-import re
-import constants
+from scraper import Scraper
+from logger import logger
+from constants import RED, RESET
+def main():
+    """
+    Función principal que crea una instancia de Scraper y ejecuta el flujo principal de scraping.
 
-# User-Agent para protegernos de baneos
-headers = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, como Gecko) Chrome/120.0.0.0 Safari/537.36"
-}
-URL_BASE = 'https://quotes.toscrape.com/'
+    1. Crea una instancia de la clase Scraper.
+    2. Obtiene el HTML de la página web.
+    3. Extrae y muestra el primer encabezado H1.
+    4. Extrae las citas de la página web.
+    5. Muestra las citas en la salida estándar.
+    """
+    try:
+        # Crear una instancia de la clase Scraper
+        scpr = Scraper()
+        
+        # Obtener el HTML de la página web y almacenarlo en el atributo 'soup'
+        scpr.fetch_html()
+        
+        # Extraer y mostrar el primer encabezado H1 de la página web
+        scpr.get_header()
+        
+        # Extraer una lista de citas desde la página web
+        quotes = scpr.get_quotes()
+        
+        # Mostrar las citas contenidas en la lista 'quotes'
+        scpr.display_quotes(quotes)
+    
+    except Exception as e:
+        # Manejar cualquier excepción inesperada que ocurra durante el flujo principal
+        logger.error(f"Ocurrió un error durante el flujo principal: {e}")
 
-try:
-    response = requests.get(URL_BASE, headers=headers)  # Obtener el HTML
-    response.raise_for_status()  # Lanza un error si la petición no fue exitosa
-
-    # "Parsear" ese HTML
-    soup = BeautifulSoup(response.text, "html.parser")
-
-    primer_h1 = soup.find('h1')
-    print(constants.separator)
-
-    # Solo el texto limpio y en mayusculas
-    primer_h1_text = primer_h1.text if primer_h1 else 'No H1 found'
-    primer_h1_limpio = re.sub(r'[^a-zA-Z\s]', '', primer_h1_text)  # Limpiar el texto
-    print(f"                              {constants.BOOK}  {primer_h1_limpio.strip().upper()}  {constants.WRITING_HAND}")  # Imprimir en mayúsculas
-    print(constants.separator)
-
-    # Iterar sobre cada div con la clase 'quote'
-    quotes = soup.find_all('div', class_='quote')
-
-    for quote in quotes:
-        try:
-            # Obtener el texto de la cita
-            text = quote.find('span', class_='text').text.strip()
-            
-            # Obtener el autor de la cita
-            author = quote.find('small', class_='author').text.strip()
-            
-            # Limpiar el autor
-            cleaned_author = re.sub(r'[^a-zA-Z\s]', '', author).lower().title()
-            
-            # Obtener las etiquetas de la cita
-            tags = quote.find_all('a', class_='tag')
-            tag_list = [tag.text.strip().capitalize() for tag in tags]
-            
-            # Imprimir los resultados
-            print(f"{constants.PASTEL_YELLOW}{text}{constants.RESET}")
-            print(f"{constants.WHITE}- {cleaned_author}{constants.RESET}")
-            print(f"\n{constants.PASTEL_PINK}{' | '.join(tag_list)}{constants.RESET}")
-            print(constants.separator)
-
-        except AttributeError as e:
-            print(f"Error al procesar la cita: {e}")
-
-except requests.exceptions.RequestException as e:
-    print(f"Error al obtener la página: {e}")
-
-except Exception as e:
-    print(f"Ocurrió un error inesperado: {e}")
+# Ejecutar la función principal si el script se ejecuta directamente
+if __name__ == "__main__":
+    main()
