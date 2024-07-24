@@ -7,9 +7,8 @@ def main():
 
     1. Crea una instancia de la clase Scraper.
     2. Obtiene el HTML de la página web.
-    3. Extrae y muestra el primer encabezado H1.
-    4. Extrae las citas de la página web.
-    5. Muestra las citas en la salida estándar.
+    3. Extrae las citas de la página web.
+    4. Muestra las citas en la salida estándar.
     """
     try:
         # Crear una instancia de la clase Scraper
