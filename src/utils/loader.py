@@ -1,6 +1,6 @@
 import threading
 import time
-from constants import LIGHT_CYAN, RESET
+from src.utils.constants import LIGHT_CYAN, RESET
 
 class Loader:
     """

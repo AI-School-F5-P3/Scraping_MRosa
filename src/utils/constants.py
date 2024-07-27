@@ -11,6 +11,9 @@ PASTEL_PINK = "\033[38;5;218m"
 RED_CIRCLE = "\U0001F534"    # 🔴
 BOOK = "\U0001F4D6"          # 📖
 WRITING_HAND = "\U0000270D"  # ✍️
+STAR = "\U00002B50"          # ⭐
+CELEBRATION = "\U0001F389"       # 🎉
+SMILE = "\U0001F600"     # 😀
 
 # Resto de constantes
 

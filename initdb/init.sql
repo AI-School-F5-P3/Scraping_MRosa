@@ -27,20 +27,20 @@ DROP TABLE IF EXISTS quotes.author CASCADE;
 DROP TABLE IF EXISTS quotes.quotes CASCADE;
 DROP TABLE IF EXISTS quotes.tags CASCADE;
 DROP TABLE IF EXISTS quotes.quote_tags CASCADE;
-DROP TABLE IF EXISTS quotes.birth_date CASCADE;
+DROP TABLE IF EXISTS quotes.birthdate CASCADE;
 DROP TABLE IF EXISTS quotes.birthplace CASCADE;
 
 -- -----------------------------  Crear las tablas  ----------------------------- --
 
 -- Crear la tabla de fechas de nacimiento
-CREATE TABLE quotes.birth_date (
+CREATE TABLE quotes.birthdate (
     id SERIAL PRIMARY KEY,
-    birth_date DATE NOT NULL
+    birthdate DATE NOT NULL
 );
 
 -- Agregar comentarios a la tabla de fechas de nacimiento
-COMMENT ON TABLE quotes.birth_date IS 'Tabla que almacena las fechas de nacimiento';
-COMMENT ON COLUMN quotes.birth_date.birth_date IS 'Fecha de nacimiento';
+COMMENT ON TABLE quotes.birthdate IS 'Tabla que almacena las fechas de nacimiento';
+COMMENT ON COLUMN quotes.birthdate.birthdate IS 'Fecha de nacimiento';
 
 -- Crear la tabla de lugares de nacimiento
 CREATE TABLE quotes.birthplace (
@@ -56,7 +56,7 @@ COMMENT ON COLUMN quotes.birthplace.birthplace IS 'Lugar de nacimiento';
 CREATE TABLE quotes.author (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    birth_date_id INTEGER REFERENCES quotes.birth_date(id),
+    birthdate_id INTEGER REFERENCES quotes.birthdate(id),
     birthplace_id INTEGER REFERENCES quotes.birthplace(id),
     description TEXT
 );
@@ -64,9 +64,20 @@ CREATE TABLE quotes.author (
 -- Agregar comentarios a la nueva tabla de autores
 COMMENT ON TABLE quotes.author IS 'Tabla que almacena información sobre los autores de las citas';
 COMMENT ON COLUMN quotes.author.name IS 'Nombre del autor';
-COMMENT ON COLUMN quotes.author.birth_date_id IS 'ID de la fecha de nacimiento del autor';
+COMMENT ON COLUMN quotes.author.birthdate_id IS 'ID de la fecha de nacimiento del autor';
 COMMENT ON COLUMN quotes.author.birthplace_id IS 'ID del lugar de nacimiento del autor';
 COMMENT ON COLUMN quotes.author.description IS 'Descripción del autor';
+
+
+-- Crear la tabla de etiquetas
+CREATE TABLE quotes.tags (
+    id SERIAL PRIMARY KEY,
+    tag VARCHAR(50) UNIQUE
+);
+
+-- Agregar comentarios a la tabla de etiquetas
+COMMENT ON TABLE quotes.tags IS 'Tabla que almacena las etiquetas de las citas';
+COMMENT ON COLUMN quotes.tags.tag IS 'Etiqueta asociada a una cita';
 
 -- Crear la tabla de citas
 CREATE TABLE quotes.quotes (
@@ -80,21 +91,12 @@ COMMENT ON TABLE quotes.quotes IS 'Tabla que almacena las citas';
 COMMENT ON COLUMN quotes.quotes.quote IS 'Texto de la cita';
 COMMENT ON COLUMN quotes.quotes.author_id IS 'ID del autor de la cita';
 
--- Crear la tabla de etiquetas
-CREATE TABLE quotes.tags (
-    id SERIAL PRIMARY KEY,
-    tag VARCHAR(50) UNIQUE
-);
-
--- Agregar comentarios a la tabla de etiquetas
-COMMENT ON TABLE quotes.tags IS 'Tabla que almacena las etiquetas de las citas';
-COMMENT ON COLUMN quotes.tags.tag IS 'Etiqueta asociada a una cita';
 
 -- Crear la tabla de relación entre citas y etiquetas
 CREATE TABLE quotes.quote_tags (
+    id SERIAL PRIMARY KEY,
     quote_id INTEGER REFERENCES quotes.quotes(id),
-    tag_id INTEGER REFERENCES quotes.tags(id),
-    PRIMARY KEY (quote_id, tag_id)
+    tag_id INTEGER REFERENCES quotes.tags(id)
 );
 
 -- Agregar comentarios a la tabla de relación entre citas y etiquetas
@@ -104,4 +106,22 @@ COMMENT ON COLUMN quotes.quote_tags.tag_id IS 'ID de la etiqueta';
 
 
 
--- ------------------------------------------------- insertar datos
+-- ------------------------------------------------- Crear la vista con Cita, Autor y Tags
+
+CREATE VIEW quotes.view_quote_details AS
+SELECT 
+    q.quote AS citation,
+    a.name AS author,
+    STRING_AGG(t.tag, ', ') AS tags
+FROM 
+    quotes.quotes q
+JOIN 
+    quotes.author a ON q.author_id = a.id
+LEFT JOIN 
+    quotes.quote_tags qt ON q.id = qt.quote_id
+LEFT JOIN 
+    quotes.tags t ON qt.tag_id = t.id
+GROUP BY 
+    q.id, q.quote, a.name
+ORDER BY 
+    q.id ASC;

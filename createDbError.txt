@@ -1,0 +1,1 @@
+createdb: error: database creation failed: ERROR:  la base de datos «quotes» ya existe

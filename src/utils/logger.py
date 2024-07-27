@@ -1,7 +1,7 @@
 import logging
 import os
 from logging.handlers import RotatingFileHandler
-from constants import RED_CIRCLE, WHITE, RED, GREEN, YELLOW, PASTEL_YELLOW, RESET
+from src.utils.constants import RED_CIRCLE, WHITE, RED, GREEN, YELLOW, PASTEL_YELLOW, RESET
 
 # Ruta de la carpeta de logs
 src_dir = os.path.dirname(os.path.dirname(__file__))
