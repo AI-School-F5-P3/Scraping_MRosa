@@ -1,10 +1,17 @@
+import sys
+import os
+# Añade el directorio raíz al sys.path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from bs4 import BeautifulSoup
 import requests
 import re
 from quote import Quote
-from logger import logger
-from loader import Loader
-from constants import URL_BASE, URL_PAGE, HEADERS, SEPARATOR, BOOK, WRITING_HAND, RED, RESET
+from src.utils.logger import logger
+from src.utils.loader import Loader
+from src.utils.constants import URL_BASE, URL_PAGE, HEADERS, SEPARATOR, BOOK, WRITING_HAND, RED, PASTEL_YELLOW, PASTEL_PINK, SMILE, CELEBRATION, GREEN, RESET
+
+from database import SessionLocal
 
 class Scraper:
     """
@@ -93,13 +100,13 @@ class Scraper:
                         about_url = about.get('href')
                         about_content = self.fetch_about_content(about_url)
                         
-                        author_born_date = about_content.get("author_born_date")
-                        author_born_location = about_content.get("author_born_location")
+                        author_birthdate = about_content.get("author_birthdate")
+                        author_birthplace = about_content.get("author_birthplace")
                         author_description = about_content.get("author_description")                   
                     except AttributeError as e:
                         logger.error(f"Error al procesar 'about': {e}")
                     
-                    quotes_list.append(Quote(text, author, author_born_date, tag_list, author_born_location, author_description))
+                    quotes_list.append(Quote(text, author, author_birthdate, tag_list, author_birthplace, author_description))
 
         except AttributeError as e:
             logger.error(f"Error al procesar las citas: {e}")
@@ -128,29 +135,29 @@ class Scraper:
             
             if about_content:
                 author_title = about_content.find('h3', class_='author-title').text.strip() if about_content.find('h3', class_='author-title') else "No title found"
-                author_born_date = about_content.find('span', class_='author-born-date').text.strip() if about_content.find('span', class_='author-born-date') else "No birth date found"
-                author_born_location = about_content.find('span', class_='author-born-location').text.strip() if about_content.find('span', class_='author-born-location') else "No birth location found"
+                author_birthdate = about_content.find('span', class_='author-born-date').text.strip() if about_content.find('span', class_='author-born-date') else "No birth date found"
+                author_birthplace = about_content.find('span', class_='author-born-location').text.strip() if about_content.find('span', class_='author-born-location') else "No birth location found"
                 author_description = about_content.find('div', class_='author-description').text.strip() if about_content.find('div', class_='author-description') else "No description found"
 
                 return {
                     "author_title": author_title,
-                    "author_born_date": author_born_date,
-                    "author_born_location": author_born_location,
+                    "author_birthdate": author_birthdate,
+                    "author_birthplace": author_birthplace,
                     "author_description": author_description
                 }
             else:
                 return {
                     "author_title": "No title found",
-                    "author_born_date": "No birth date found",
-                    "author_born_location": "No birth location found",
+                    "author_birthdate": "No birth date found",
+                    "author_birthplace": "No birth location found",
                     "author_description": "No description found"
                 }
         except Exception as e:
             logger.error(f"Error al obtener el contenido de la página 'about': {e}")
             return {
                 "author_title": "Error",
-                "author_born_date": "Error",
-                "author_born_location": "Error",
+                "author_birthdate": "Error",
+                "author_birthplace": "Error",
                 "author_description": "Error"
             }
         
@@ -163,3 +170,24 @@ class Scraper:
         """
         for quote in quotes_list:
             quote.display()
+
+    async def save_quotes_to_db(self, quotes_list):
+        """Guarda todas las citas en la base de datos."""
+        total_quotes = len(quotes_list)
+        print(f"{PASTEL_PINK}Total de citas a procesar: {total_quotes}{RESET}")
+        
+        async with SessionLocal() as session:
+            try:
+                for index, quote in enumerate(quotes_list, start=1):
+                    try:
+                        print(f"\n{PASTEL_YELLOW}{BOOK} - Cita {index} --------------------------------------------------------------------------------------------------{RESET}\n")
+                        await quote.save(session)
+                    except Exception as e:
+                        print(f"{RED}Error al guardar la cita {index}: {e}{RESET}")
+                print(f"\n\n{SMILE} {GREEN} Se han insertado {total_quotes} citas correctamente en la base de datos. {CELEBRATION} {RESET}\n\n")
+            except Exception as e:
+                print(f"{RED}Error al procesar las citas: {e}{RESET}")
+
+
+
+                
