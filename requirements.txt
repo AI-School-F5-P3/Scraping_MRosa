@@ -1,2 +1,11 @@
 beautifulsoup4==4.11.2
 requests==2.27.1
+python-dotenv==1.0.1
+greenlet==3.0.3
+psycopg2==2.9.9
+sqlalchemy==2.0.31
+typing-extensions==4.12.2
+annotated-types==0.7.0
+pydantic==2.8.2
+pydantic-core==2.20.1
+asyncpg==0.29.0
