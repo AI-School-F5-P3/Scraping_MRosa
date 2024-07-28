@@ -1,8 +1,7 @@
 import os
-from sqlalchemy import create_engine, Column, Integer, String, Text, Date, ForeignKey, MetaData
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import MetaData
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy import text
 from dotenv import load_dotenv
 
@@ -17,14 +16,15 @@ metadata = MetaData(schema=db_schema)
 Base = declarative_base(metadata=metadata)
 
 # Cadena de conexión 
-db_type = os.getenv('DB_TYPE', 'postgresql+asyncpg')  # Valor por defecto si DB_TYPE no está definido
-db_host = os.getenv('DB_HOST')
-db_port = os.getenv('DB_PORT')
-db_name = os.getenv('DB_DB')
-db_user = os.getenv('DB_USER')
-db_pass = os.getenv('DB_PASSWORD')
+db_type = os.getenv('DB_TYPE', 'postgresql+asyncpg')
+db_host = os.getenv('DB_HOST', 'postgres')
+db_port = os.getenv('DB_PORT', '5432')
+db_name = os.getenv('DB_NAME', 'quotes')
+db_user = os.getenv('DB_USER', 'postgres')
+db_pass = os.getenv('DB_PASSWORD', 'postgres')
 
 database_url = f"{db_type}://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
+# print(f"DATA BASE URL: {database_url}")
 
 # Crear motor asíncrono
 engine = create_async_engine(database_url, echo=True)

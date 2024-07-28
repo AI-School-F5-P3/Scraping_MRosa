@@ -5,7 +5,7 @@ from src.utils.constants import RED_CIRCLE, WHITE, RED, GREEN, YELLOW, PASTEL_YE
 
 # Ruta de la carpeta de logs
 src_dir = os.path.dirname(os.path.dirname(__file__))
-log_dir = os.path.join(src_dir, 'src', 'logs')
+log_dir = os.path.join(src_dir, '..', 'logs')
 
 # Crea la carpeta si no existe
 if not os.path.exists(log_dir):
@@ -43,7 +43,7 @@ def setup_logging():
             backupCount=5,
             encoding='utf-8'
         )
-        file_handler.setLevel(logging.DEBUG)
+        file_handler.setLevel(logging.WARNING)
         file_formatter = logging.Formatter(
             '%(asctime)s [%(levelname)s] [%(name)s] [%(filename)s:%(lineno)d] - %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S'
@@ -52,7 +52,7 @@ def setup_logging():
 
         # Configurar el root logger
         root_logger = logging.getLogger()
-        root_logger.setLevel(logging.DEBUG)
+        root_logger.setLevel(logging.WARNING)
         root_logger.addHandler(file_handler)
         
         # Crear el handler de consola
@@ -65,7 +65,20 @@ def setup_logging():
 
         # Añadir el handler de consola al logger root
         root_logger.addHandler(console_handler)
-        
+
+        # Configuración del logger de SQLAlchemy
+        sqlalchemy_logger = logging.getLogger('sqlalchemy')
+        sqlalchemy_logger.setLevel(logging.WARNING)  # Ajusta el nivel de logs de SQLAlchemy
+        # Opcional: Configurar el logger para ver consultas SQL
+        # sqlalchemy_logger.setLevel(logging.INFO)
+        # sqlalchemy_logger.setLevel(logging.DEBUG)
+
+        sqlalchemy_handler = logging.StreamHandler()
+        sqlalchemy_handler.setLevel(logging.WARNING)
+        sqlalchemy_formatter = ColoredFormatter(f'[%(levelname)s] {PASTEL_YELLOW}[%(filename)s:%(lineno)d] - %(message)s')
+        sqlalchemy_handler.setFormatter(sqlalchemy_formatter)
+        root_logger.addHandler(sqlalchemy_handler)
+
     except Exception as e:
         raise RuntimeError(f"{RED}{RED_CIRCLE} - Error al configurar el logging: {e}{RESET}")
 

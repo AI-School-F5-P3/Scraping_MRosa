@@ -5,7 +5,7 @@ import asyncio
 
 import os
 from dotenv import main
-from src.utils.constants import  GREEN, RED, RESET  # Importa constantes de formato desde el módulo 'constants'.
+from constants import  GREEN, RED, RESET  # Importa constantes de formato desde el módulo 'constants'.
 
 
 main.load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
