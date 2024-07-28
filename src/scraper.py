@@ -9,7 +9,7 @@ import re
 from quote import Quote
 from src.utils.logger import logger
 from src.utils.loader import Loader
-from src.utils.constants import URL_BASE, URL_PAGE, HEADERS, SEPARATOR, BOOK, WRITING_HAND, RED, PASTEL_YELLOW, PASTEL_PINK, SMILE, CELEBRATION, GREEN, RESET
+from src.utils.constants import URL_BASE, URL_PAGE, HEADERS, SEPARATOR, BOOK, WRITING_HAND, TWO_OCLOCK, LIGHT_CYAN, RED, PASTEL_YELLOW, PASTEL_PINK, SMILE, CELEBRATION, GREEN, RESET
 
 from database import SessionLocal
 
@@ -30,7 +30,6 @@ class Scraper:
     
     def __init__(self):
         self.soups = []  # Lista para almacenar los objetos BeautifulSoup de todas las páginas
-        self.header_shown = False  # Controla si el encabezado H1 ya ha sido mostrado
         self.loader = Loader()  # Instancia del loader para mostrar progreso
 
 
@@ -44,11 +43,14 @@ class Scraper:
                 response = requests.get(URL_FINAL, headers=HEADERS)
                 response.raise_for_status()
                 soup = BeautifulSoup(response.text, "html.parser")
-                self.soups.append(soup)  # Almacena el objeto BeautifulSoup en la lista
                 # Solo muestra el encabezado H1 de la primera página
-                if not self.header_shown:
+                if i == 1:
                     self.show_header(soup)
-                    self.header_shown = True
+                    # self.loader.start()  # Inicia el loader
+                    print(f"\n| {LIGHT_CYAN}Scrapeando... {TWO_OCLOCK}{RESET}\n")
+
+                self.soups.append(soup)  # Almacena el objeto BeautifulSoup en la lista
+
         except requests.exceptions.RequestException as e:
             logger.error(f"Error al obtener la página: {e}")
         except Exception as e:
@@ -73,7 +75,8 @@ class Scraper:
             print(f"                              {BOOK}  {primer_h1_limpio.strip().upper()}  {WRITING_HAND}")  # Imprimir en mayúsculas
             print(SEPARATOR)
 
-            self.loader.start()  # Inicia el loader
+            # self.loader.start()  # Inicia el loader
+
         except AttributeError as e:
             logger.error(f"Error al obtener el encabezado: {e}")
         except Exception as e:
@@ -112,8 +115,8 @@ class Scraper:
             logger.error(f"Error al procesar las citas: {e}")
         except Exception as e:
             logger.error(f"Ocurrió un error inesperado: {e}")
-        finally:
-            self.loader.stop()  # Detiene el loader independientemente del resultado
+        # finally:
+            # self.loader.stop()  # Detiene el loader independientemente del resultado
         return quotes_list
     
 
@@ -180,10 +183,11 @@ class Scraper:
             try:
                 for index, quote in enumerate(quotes_list, start=1):
                     try:
-                        print(f"\n{PASTEL_YELLOW}{BOOK} - Cita {index} --------------------------------------------------------------------------------------------------{RESET}\n")
+                        print(f"\n{BOOK} {PASTEL_YELLOW} Cita {index} ·································································································{RESET}\n")
                         await quote.save(session)
                     except Exception as e:
                         print(f"{RED}Error al guardar la cita {index}: {e}{RESET}")
+                        raise
                 print(f"\n\n{SMILE} {GREEN} Se han insertado {total_quotes} citas correctamente en la base de datos. {CELEBRATION} {RESET}\n\n")
             except Exception as e:
                 print(f"{RED}Error al procesar las citas: {e}{RESET}")
