@@ -8,7 +8,7 @@ import requests
 import re
 from quote import Quote
 from src.utils.logger import logger
-from src.utils.loader import Loader
+# from src.utils.loader import Loader
 from src.utils.constants import URL_BASE, URL_PAGE, HEADERS, SEPARATOR, BOOK, WRITING_HAND, TWO_OCLOCK, LIGHT_CYAN, RED, PASTEL_YELLOW, PASTEL_PINK, SMILE, CELEBRATION, GREEN, RESET
 
 from database import SessionLocal
@@ -30,7 +30,7 @@ class Scraper:
     
     def __init__(self):
         self.soups = []  # Lista para almacenar los objetos BeautifulSoup de todas las páginas
-        self.loader = Loader()  # Instancia del loader para mostrar progreso
+        # self.loader = Loader()  # Instancia del loader para mostrar progreso
 
 
     def fetch_html(self):
@@ -38,7 +38,7 @@ class Scraper:
         Obtiene el HTML de las páginas web especificadas en el rango de páginas y almacena cada página en `self.soups`.
         """
         try:
-            for i in range(1, 11):  # Ajusta el rango según el número total de páginas
+            for i in range(1, 2):  # Ajusta el rango según el número total de páginas
                 URL_FINAL = f"{URL_BASE}{URL_PAGE}{i}"
                 response = requests.get(URL_FINAL, headers=HEADERS)
                 response.raise_for_status()
@@ -98,14 +98,21 @@ class Scraper:
                     author = quote.find('small', class_='author').text.strip()
                     tags = quote.find_all('a', class_='tag')
                     tag_list = [tag.text.strip().capitalize() for tag in tags]
+                    """
+                    tag_list - Toma cada elemento en tags, extrae el texto, elimina los espacios en blanco alrededor del texto 'strip()', convierte la primera letra a mayúscula y todas las demás a minúscula 'capitalize()', y coloca el resultado en 'tag_list'.
+                    """
                     about = quote.find('a', text='(about)')
                     try:
                         about_url = about.get('href')
                         about_content = self.fetch_about_content(about_url)
-                        
+                        """
+                        Busca un enlace específico etiquetado como '(about)' dentro de una cita.
+                        Si encuentra el enlace, obtiene la URL del enlace y llama al método 'fetch_about_content' para recuperar contenido adicional desde esa URL.
+                        """ 
                         author_birthdate = about_content.get("author_birthdate")
                         author_birthplace = about_content.get("author_birthplace")
-                        author_description = about_content.get("author_description")                   
+                        author_description = about_content.get("author_description") 
+
                     except AttributeError as e:
                         logger.error(f"Error al procesar 'about': {e}")
                     

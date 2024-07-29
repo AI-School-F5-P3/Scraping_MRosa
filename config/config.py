@@ -1,9 +1,9 @@
-# Importamos biblioteca dotenv.
-from dotenv import load_dotenv
 import os
+from dotenv import main
 
 # Cargar las variables de entorno del archivo .env
-load_dotenv()  # Este comando buscará el archivo .env en el directorio actual
+dotenv_path = os.path.join(os.path.dirname(__file__), '../.env')
+main.load_dotenv(dotenv_path)
 
 # Acceder a las variables de entorno
 database_url = os.getenv('DATABASE_URL')
