@@ -47,7 +47,9 @@ class Scraper:
                 # Verifica si la página está vacía o no contiene datos relevantes
                 if not self.has_data(soup):
                     break
-
+                # if i == 2:
+                #     break
+                
                 # Solo muestra el encabezado H1 de la primera página
                 if i == 1:
                     self.show_header(soup)
