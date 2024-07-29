@@ -109,11 +109,14 @@ En es caso deberemos cambiar en el archivo .env
 
 Para iniciar con Docker ejecutamos
 
-    docker-compose -f docker-compose.yaml up --build                                                                  
+    docker-compose -f docker-compose.yaml up --build 
+
 
 ## Funcionamiento de la Aplicación de Web Scraping
 
-Esta aplicación de web scraping está diseñada para extraer información de un sitio web, almacenar los datos en una base de datos y ofrecer funcionalidades para mostrar y manejar esta información. Aquí te presento un paso a paso técnico de cómo funciona la aplicación:
+Esta aplicación de web scraping está diseñada para extraer información de un sitio web y almacenar los datos en una base de datos. 
+
+Aquí presentamos un paso a paso técnico de cómo funciona la aplicación:
 
 ### 1. Configuración Inicial
 
