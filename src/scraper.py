@@ -8,7 +8,7 @@ import requests
 import re
 from quote import Quote
 from src.utils.logger import logger
-from src.utils.loader import Loader
+# from src.utils.loader import Loader
 from src.utils.constants import URL_BASE, URL_PAGE, HEADERS, SEPARATOR, BOOK, WRITING_HAND, TWO_OCLOCK, LIGHT_CYAN, RED, PASTEL_YELLOW, PASTEL_PINK, SMILE, CELEBRATION, GREEN, RESET
 
 from database import SessionLocal
@@ -30,33 +30,52 @@ class Scraper:
     
     def __init__(self):
         self.soups = []  # Lista para almacenar los objetos BeautifulSoup de todas las páginas
-        self.loader = Loader()  # Instancia del loader para mostrar progreso
-
+        # self.loader = Loader()  # Instancia del loader para mostrar progreso
 
     def fetch_html(self):
         """
         Obtiene el HTML de las páginas web especificadas en el rango de páginas y almacena cada página en `self.soups`.
         """
-        try:
-            for i in range(1, 11):  # Ajusta el rango según el número total de páginas
-                URL_FINAL = f"{URL_BASE}{URL_PAGE}{i}"
-                response = requests.get(URL_FINAL, headers=HEADERS)
+        i = 1  # Inicializa el índice
+        while True:
+            try:
+                url_final = f"{URL_BASE}{URL_PAGE}{i}"
+                response = requests.get(url_final, headers=HEADERS)
                 response.raise_for_status()
                 soup = BeautifulSoup(response.text, "html.parser")
+                
+                # Verifica si la página está vacía o no contiene datos relevantes
+                if not self.has_data(soup):
+                    break
+
                 # Solo muestra el encabezado H1 de la primera página
                 if i == 1:
                     self.show_header(soup)
-                    # self.loader.start()  # Inicia el loader
                     print(f"\n| {LIGHT_CYAN}Scrapeando... {TWO_OCLOCK}{RESET}\n")
 
                 self.soups.append(soup)  # Almacena el objeto BeautifulSoup en la lista
+                i += 1  # Incrementa el índice
 
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Error al obtener la página: {e}")
-        except Exception as e:
-            logger.error(f"Ocurrió un error inesperado: {e}")
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Error al obtener la página: {e}")
+                break  # Sal del bucle en caso de un error de solicitud
+            except Exception as e:
+                logger.error(f"Ocurrió un error inesperado: {e}")
+                break  # Sal del bucle en caso de cualquier otro error
 
-
+    def has_data(self, soup):
+        """
+        Implementa una lógica para determinar si la página contiene datos relevantes.
+        Por ejemplo, verifica si hay un elemento específico que debería estar presente en todas las páginas con datos.
+        
+        Args:
+            soup (BeautifulSoup): El objeto BeautifulSoup de la página web.
+        
+        Returns:
+            bool: True si la página contiene datos relevantes, False en caso contrario.
+        """
+        return bool(soup.find('div', class_='quote'))
+    
     def show_header(self, soup):
         """
         Muestra el primer encabezado H1 de una página web.\n
@@ -85,10 +104,10 @@ class Scraper:
     def get_quotes(self):
         """
         Extrae citas de todas las páginas web almacenadas en `self.soups` y las devuelve como una lista de objetos `Quote`.
+        
         Returns:
             List[Quote]: Lista de objetos `Quote` con las citas extraídas.
         """
-
         quotes_list = []
         try:
             for soup in self.soups:
@@ -98,14 +117,15 @@ class Scraper:
                     author = quote.find('small', class_='author').text.strip()
                     tags = quote.find_all('a', class_='tag')
                     tag_list = [tag.text.strip().capitalize() for tag in tags]
+                    
                     about = quote.find('a', text='(about)')
                     try:
                         about_url = about.get('href')
                         about_content = self.fetch_about_content(about_url)
-                        
                         author_birthdate = about_content.get("author_birthdate")
                         author_birthplace = about_content.get("author_birthplace")
-                        author_description = about_content.get("author_description")                   
+                        author_description = about_content.get("author_description") 
+
                     except AttributeError as e:
                         logger.error(f"Error al procesar 'about': {e}")
                     
@@ -115,8 +135,6 @@ class Scraper:
             logger.error(f"Error al procesar las citas: {e}")
         except Exception as e:
             logger.error(f"Ocurrió un error inesperado: {e}")
-        # finally:
-            # self.loader.stop()  # Detiene el loader independientemente del resultado
         return quotes_list
     
 
