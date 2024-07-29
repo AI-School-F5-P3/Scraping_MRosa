@@ -8,7 +8,7 @@ import requests
 import re
 from quote import Quote
 from src.utils.logger import logger
-# from src.utils.loader import Loader
+from src.utils.loader import Loader
 from src.utils.constants import URL_BASE, URL_PAGE, HEADERS, SEPARATOR, BOOK, WRITING_HAND, TWO_OCLOCK, LIGHT_CYAN, RED, PASTEL_YELLOW, PASTEL_PINK, SMILE, CELEBRATION, GREEN, RESET
 
 from database import SessionLocal
@@ -30,7 +30,7 @@ class Scraper:
     
     def __init__(self):
         self.soups = []  # Lista para almacenar los objetos BeautifulSoup de todas las páginas
-        # self.loader = Loader()  # Instancia del loader para mostrar progreso
+        self.loader = Loader()  # Instancia del loader para mostrar progreso
 
     def fetch_html(self):
         """
@@ -47,13 +47,13 @@ class Scraper:
                 # Verifica si la página está vacía o no contiene datos relevantes
                 if not self.has_data(soup):
                     break
-                # if i == 2:
-                #     break
-                
+                if i == 2:  # Para que no se haga larga la espera en la demo.
+                    break
+
                 # Solo muestra el encabezado H1 de la primera página
                 if i == 1:
                     self.show_header(soup)
-                    print(f"\n| {LIGHT_CYAN}Scrapeando... {TWO_OCLOCK}{RESET}\n")
+                    # print(f"\n| {LIGHT_CYAN}Scrapeando... {TWO_OCLOCK}{RESET}\n")
 
                 self.soups.append(soup)  # Almacena el objeto BeautifulSoup en la lista
                 i += 1  # Incrementa el índice
@@ -96,7 +96,7 @@ class Scraper:
             print(f"                              {BOOK}  {primer_h1_limpio.strip().upper()}  {WRITING_HAND}")  # Imprimir en mayúsculas
             print(SEPARATOR)
 
-            # self.loader.start()  # Inicia el loader
+            self.loader.start()  # Inicia el loader
 
         except AttributeError as e:
             logger.error(f"Error al obtener el encabezado: {e}")
@@ -137,6 +137,8 @@ class Scraper:
             logger.error(f"Error al procesar las citas: {e}")
         except Exception as e:
             logger.error(f"Ocurrió un error inesperado: {e}")
+        finally:
+            self.loader.stop()  # Detiene el loader independientemente del resultado
         return quotes_list
     
 
