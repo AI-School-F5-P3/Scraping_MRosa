@@ -2,6 +2,7 @@ version: '3'
 services:
   postgres:
     image: postgres:latest
+    container_name: quotes_db
     restart: always
     env_file:
       - .env  # Ruta al archivo .env relativa al directorio donde se encuentra el docker-compose.yml
@@ -43,3 +44,4 @@ services:
 
 networks:
   dem:
+    driver: bridge
