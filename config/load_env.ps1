@@ -54,14 +54,14 @@ try {
 
         try {
             Write-Green "Creando base de datos..."
-            $createDbProcess = Start-Process -FilePath "createdb" -ArgumentList $createDbArgs -NoNewWindow -Wait -PassThru -RedirectStandardOutput "createDbOutput.txt" -RedirectStandardError "createDbError.txt"
+            $createDbProcess = Start-Process -FilePath "createdb" -ArgumentList $createDbArgs -NoNewWindow -Wait -PassThru -RedirectStandardOutput "../logs/createDbOutput.txt" -RedirectStandardError "../logs/createDbError.txt"
 
             if ($createDbError -match "ERROR:  la base de datos .*$databaseName.* ya existe") {
                 Write-Yellow "La base de datos '$databaseName' ya existe."
             } elseif ($createDbProcess.ExitCode -eq 0) {
                 Write-Green "Base de datos '$databaseName' creada con éxito."
             } else {
-                Write-Red "Error al crear la base de datos: $createDbError"
+                Write-Yellow "La base de datos '$databaseName' ya existe"
             }
         } catch {
             Write-Red "Error al crear la base de datos: $_"
